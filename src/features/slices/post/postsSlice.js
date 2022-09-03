@@ -1,34 +1,20 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
+import axios from "axios";
 
-const initialState = [
-  {
-    id: "1",
-    title: "Learning Redux Toolkit",
-    content: "Redux is such a fun topic",
-    date: sub(new Date(), { minutes: 10 }).toISOString(),
-    reactions: {
-      thumbsUp: 0,
-      wow: 0,
-      heart: 0,
-      rocket: 0,
-      coffee: 0,
-    },
-  },
-  {
-    id: "2",
-    title: "Slices...",
-    content: "I can't wait for my pizza later....mmmmmmmmm pizzzaaaaaa",
-    date: sub(new Date(), { minutes: 5 }).toISOString(),
-    reactions: {
-      thumbsUp: 0,
-      wow: 0,
-      heart: 0,
-      rocket: 0,
-      coffee: 0,
-    },
-  },
-];
+const localHost = " http://localhost:3030/posts";
+
+// shortcut you can use crtl+d when you have many things needing to be edited so highlight then command
+const initialState = {
+  posts: [],
+  status: "idle",
+  error: null,
+};
+
+export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
+  const resp = await axios.get(localHost);
+  return resp.data;
+});
 
 const postsSlice = createSlice({
   name: "posts",
@@ -36,11 +22,9 @@ const postsSlice = createSlice({
   reducers: {
     postAdded: {
       reducer(state, action) {
-        //we can push because we are using immerJS anywhere else we have to use the normal way to not mutate the state
-        state.push(action.payload);
-        // state = [...state, action.payload];
+        state.post.push(action.payload);
       },
-      // prepare can take in the action.payload and transforms it to what we want it to be then returns it to the reducer as a callback
+
       prepare(title, content, userId) {
         return {
           payload: {
@@ -62,15 +46,41 @@ const postsSlice = createSlice({
     },
     reactionAdded(state, action) {
       const { postId, reaction } = action.payload;
-      const existingPost = state.find((post) => post.id === postId);
+      const existingPost = state.post.find((post) => post.id === postId);
       if (existingPost) {
         existingPost.reactions[reaction]++;
       }
     },
   },
+  extraReducers(builder) {
+    builder
+      .addCase(fetchPosts.pending, (state, action) => {
+        state.status = "loading...";
+      })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        state.status = "Succeeded";
+
+        let min = 1;
+        const loadedPosts = action.payload.map((post) => {
+          post.date = sub(Date(), { minutes: min++ }).toISOString();
+          post.reaction = {
+            thumbsUp: 0,
+            hooray: 0,
+            heart: 0,
+            rocket: 0,
+            eyes: 0,
+          };
+          return post;
+        });
+        state.posts = state.posts.concat(loadedPosts);
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+  },
 });
 
-export const selectAllPosts = (state) => state.posts;
+export const selectAllPosts = (state) => state.post.posts;
 
 export const { postAdded, reactionAdded } = postsSlice.actions;
 
