@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 const initialState = [
   {
@@ -16,9 +16,29 @@ const initialState = [
 const postsSlice = createSlice({
   name: "posts",
   initialState,
-  reducers: {},
+  reducers: {
+    postAdded: {
+      reducer(state, action) {
+        //we can push because we are using immerJS anywhere else we have to use the normal way to not mutate the state
+        // state.push(action.payload);
+        // state = [...state, action.payload];
+      },
+      // prepare can take in the action.payload and transforms it to what we want it to be then returns it to the reducer as a callback
+      prepare(title, content) {
+        return {
+          payload: {
+            id: nanoid(),
+            title,
+            content,
+          },
+        };
+      },
+    },
+  },
 });
 
 export const selectAllPosts = (state) => state.posts;
+
+export const { postAdded } = postsSlice.actions;
 
 export default postsSlice.reducer;
