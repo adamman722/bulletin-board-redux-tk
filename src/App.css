@@ -1,6 +1,8 @@
-main {
+body {
   height: 100vh;
   background-color: rgb(71, 71, 71);
+}
+main {
   color: white;
   display: flex;
   flex-direction: column;
