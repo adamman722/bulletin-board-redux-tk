@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { postAdded } from "../../features/slices/post/postsSlice";
+import { addNewPost } from "../../features/slices/post/postsSlice";
 import { selectAllUsers } from "../../features/slices/users/userSlice";
 //nanoid helps us create a random id so we don't have to worry about creating one
 
@@ -9,6 +9,7 @@ function AddPostForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [userId, setUserId] = useState("");
+  const [addRequestStatus, setAddRequestStatus] = useState("idle");
 
   const dispatch = useDispatch();
   const users = useSelector(selectAllUsers);
@@ -17,23 +18,26 @@ function AddPostForm() {
   const onContentChange = (e) => setContent(e.target.value);
   const onAuthorChange = (e) => setUserId(e.target.value);
 
+  const canSave =
+    [title, content, userId].every(Boolean) && addRequestStatus === "idle";
+
   const onSavePostClicked = () => {
-    if (title && content) {
-      dispatch(
-        //the benefit of doing it this way is that the component does not need to know the setup of the slice but just take in the raw data
-        postAdded(title, content, userId)
-        // postAdded({
-        //   id: nanoid(),
-        //   title,
-        //   content,
-        // })
-      );
-      setTitle("");
-      setContent("");
+    if (canSave) {
+      try {
+        setAddRequestStatus("pending");
+        //unwrap returns a  new promise that has the payload or a reject payload hence to use the tryCatch
+        dispatch(addNewPost({ title, body: content, userId })).unwrap();
+
+        setTitle("");
+        setContent("");
+        setUserId("");
+      } catch (error) {
+        console.log("Failed to save boiii", error);
+      } finally {
+        setAddRequestStatus("idle");
+      }
     }
   };
-
-  const canSave = Boolean(title) && Boolean(content) && Boolean(userId);
 
   const userOptions = users.map((user) => (
     <option key={user.id} value={user.id}>

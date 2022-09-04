@@ -6,11 +6,12 @@ const reactionEmoji = {
   wow: "😮",
   heart: "❤️",
   rocket: "🚀",
-  coffee: "☕😂",
+  coffee: "☕",
 };
 
-const ReactionsButton = ({ post }) => {
+const ReactionButtons = ({ post }) => {
   const dispatch = useDispatch();
+
   const reactionButtons = Object.entries(reactionEmoji).map(([name, emoji]) => {
     return (
       <button
@@ -21,11 +22,11 @@ const ReactionsButton = ({ post }) => {
           dispatch(reactionAdded({ postId: post.id, reaction: name }))
         }
       >
-        {emoji} {post.reactions[name]}
+        {emoji} {post.reaction[name]}
       </button>
     );
   });
+
   return <div>{reactionButtons}</div>;
 };
-
-export default ReactionsButton;
+export default ReactionButtons;

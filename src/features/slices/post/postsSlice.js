@@ -2,7 +2,7 @@ import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
 import axios from "axios";
 
-const localHost = " http://localhost:3030/posts";
+const localHosts = "http://localhost:3030/posts";
 
 // shortcut you can use crtl+d when you have many things needing to be edited so highlight then command
 const initialState = {
@@ -12,9 +12,18 @@ const initialState = {
 };
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  const resp = await axios.get(localHost);
+  const resp = await axios.get("http://localhost:3030/posts");
+  console.log(resp);
   return resp.data;
 });
+export const addNewPost = createAsyncThunk(
+  "posts/addNewPost",
+  async (initialPost) => {
+    const resp = await axios.post("http://localhost:3030/posts", initialPost);
+    console.log(resp);
+    return resp.data;
+  }
+);
 
 const postsSlice = createSlice({
   name: "posts",
@@ -22,7 +31,7 @@ const postsSlice = createSlice({
   reducers: {
     postAdded: {
       reducer(state, action) {
-        state.post.push(action.payload);
+        state.posts.push(action.payload);
       },
 
       prepare(title, content, userId) {
@@ -33,7 +42,7 @@ const postsSlice = createSlice({
             content,
             date: new Date().toISOString(),
             userId,
-            reactions: {
+            reaction: {
               thumbsUp: 0,
               wow: 0,
               heart: 0,
@@ -46,9 +55,9 @@ const postsSlice = createSlice({
     },
     reactionAdded(state, action) {
       const { postId, reaction } = action.payload;
-      const existingPost = state.post.find((post) => post.id === postId);
+      const existingPost = state.posts.find((post) => post.id === postId);
       if (existingPost) {
-        existingPost.reactions[reaction]++;
+        existingPost.reaction[reaction]++;
       }
     },
   },
@@ -59,28 +68,43 @@ const postsSlice = createSlice({
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
         state.status = "Succeeded";
-
         let min = 1;
         const loadedPosts = action.payload.map((post) => {
-          post.date = sub(Date(), { minutes: min++ }).toISOString();
+          post.date = sub(new Date(), { minutes: min++ }).toISOString();
           post.reaction = {
             thumbsUp: 0,
-            hooray: 0,
+            wow: 0,
             heart: 0,
             rocket: 0,
-            eyes: 0,
+            coffee: 0,
           };
           return post;
         });
         state.posts = state.posts.concat(loadedPosts);
       })
       .addCase(fetchPosts.rejected, (state, action) => {
-        state.error = action.payload;
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(addNewPost.fulfilled, (state, action) => {
+        action.payload.userId = Number(action.payload.userId);
+        action.payload.date = new Date().toISOString();
+        action.payload.reaction = {
+          thumbsUp: 0,
+          wow: 0,
+          heart: 0,
+          rocket: 0,
+          coffee: 0,
+        };
+        console.log(action.payload);
+        state.posts.push(action.payload);
       });
   },
 });
 
-export const selectAllPosts = (state) => state.post.posts;
+export const selectAllPosts = (state) => state.posts.posts;
+export const getPostsStatus = (state) => state.posts.status;
+export const getPostsError = (state) => state.posts.error;
 
 export const { postAdded, reactionAdded } = postsSlice.actions;
 

@@ -1,35 +1,50 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { selectAllPosts } from "../../features/slices/post/postsSlice";
-import PostAuthor from "./PostAuthor";
-import TimeAgo from "./TimeAgo";
-import ReactionsButton from "./ReactionsButton";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import {
+  selectAllPosts,
+  getPostsStatus,
+  getPostsError,
+  fetchPosts,
+} from "../../features/slices/post/postsSlice";
+import PostExcerpt from "./PostExcerpt";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 function PostsList() {
+  const dispatch = useDispatch();
   const posts = useSelector(selectAllPosts);
-  console.log(posts);
+  const postStatus = useSelector(getPostsStatus);
+  const error = useSelector(getPostsError);
+
+  useEffect(() => {
+    if (postStatus === "idle") {
+      dispatch(fetchPosts());
+    }
+  }, [postStatus, dispatch]);
 
   //we are sorting the posts with localeCompare that returns a 1 0 -1 from our dates to see which is the earliest in the array then making a shallow copy with slice
 
-  const orderedPosts = posts
-    .slice()
-    .sort((a, b) => b.date.localeCompare(a.date));
+  //we are just checking the status to determine the components
+  let content;
+  if (postStatus === "loading...") {
+    content = <FontAwesomeIcon icon={faSpinner} size="5x" spin />;
+  } else if (postStatus === "Succeeded") {
+    const orderedPosts = posts
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date));
+    content = orderedPosts.map((post) => (
+      <PostExcerpt key={post.id} post={post} />
+    ));
+  } else if (postStatus === "failed") {
+    content = <p>{error}</p>;
+  }
 
-  const renderedPosts = orderedPosts.map((post) => (
-    <article key={post.id}>
-      <h3>{post.title}</h3>
-      <p>{post.content.substring(0, 100)}</p>
-      <p className="post-credit">
-        <PostAuthor userId={post.userId} />
-        <TimeAgo timestamp={post.date} />
-      </p>
-      <ReactionsButton post={post} />
-    </article>
-  ));
   return (
     <section>
       <h2>Posts</h2>
-      {renderedPosts}
+      {content}
     </section>
   );
 }

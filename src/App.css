@@ -9,9 +9,12 @@ main {
   align-items: center;
   gap: 2rem;
 }
-section {
-  flex-direction: column;
-  align-items: center;
+
+.post-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.3rem;
 }
 article {
   margin-top: 1rem;
@@ -23,6 +26,11 @@ article {
   padding: 1rem;
   border: 1px solid white;
   border-radius: 1rem;
+  cursor: pointer;
+  transition: 1s;
+}
+article:hover {
+  box-shadow: 6px 10px 23px -1px rgba(255, 255, 255, 1);
 }
 section > h2 {
   font-size: 2rem;
