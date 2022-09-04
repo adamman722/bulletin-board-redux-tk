@@ -18,10 +18,19 @@ main {
 h1 {
   color: #bc6c25;
 }
+nav > ul {
+  display: flex;
+  gap: 2rem;
+}
 nav > ul > li {
   font-size: 1.5rem;
   font-weight: bold;
   list-style: none;
+  transition: 1s;
+}
+nav > ul > li:hover {
+  border-radius: 10px;
+  background-color: #dda15e;
 }
 .links-boi {
   color: #bc6c25;
@@ -84,7 +93,24 @@ section > h2 {
   margin-top: 1rem;
 }
 .save-post-button {
+  cursor: pointer;
   margin-top: 1rem;
+  border: 1px solid #bc6c25;
+  border-radius: 5px;
+  transition: 1s;
+}
+.save-post-button:hover {
+  background-color: #bc6c25;
+}
+.delete-button {
+  cursor: pointer;
+  margin-top: 1rem;
+  border: 1px solid #bc6c25;
+  border-radius: 5px;
+  transition: 1s;
+}
+.delete-button:hover {
+  background-color: #bc6c25;
 }
 .reaction-button {
   cursor: pointer;

@@ -33,7 +33,7 @@ function PostsList() {
     content = <p>{error}</p>;
   }
 
-  return <section>{content}</section>;
+  return <section className="post-section">{content}</section>;
 }
 
 export default PostsList;

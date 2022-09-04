@@ -11,7 +11,7 @@ const Header = () => {
       <img
         src={frog}
         alt=""
-        style={{ height: "3.9rem", marginRight: "10rem" }}
+        style={{ height: "3.9rem", marginRight: "6rem" }}
       />
       <nav>
         <ul>
