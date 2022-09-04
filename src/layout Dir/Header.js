@@ -4,7 +4,10 @@ import frog from "../img/1654810783_1-papik-pro-p-cute-drawing-of-a-frog-on-a-mu
 const Header = () => {
   return (
     <header className="top-header">
-      <h1>Redux Blog Frog</h1>
+      <Link to="/" className="links-boi">
+        <h1>Redux Blog Frog</h1>
+      </Link>
+
       <img
         src={frog}
         alt=""
