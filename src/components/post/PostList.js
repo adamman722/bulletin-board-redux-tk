@@ -43,8 +43,8 @@ function PostsList() {
 
   return (
     <section>
-      <h2>Posts</h2>
-      {content}
+      <h2 style={{ textAlign: "center" }}>Posts</h2>
+      <section className="post-section">{content}</section>
     </section>
   );
 }
