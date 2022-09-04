@@ -5,17 +5,21 @@ import App from "./App";
 import { store } from "./features/store";
 import { Provider } from "react-redux";
 import { fetchUsers } from "./features/slices/users/userSlice";
+import { fetchPosts } from "./features/slices/post/postsSlice";
 
-//when we want something to load as soon as the app starts we can call the dispatch at the highest level
-//idk if this is best practice
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 store.dispatch(fetchUsers());
+store.dispatch(fetchPosts());
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  // strict mode makes the app render twice "This happens is an intentional feature of the React.StrictMode. It only happens in development mode and should help to find accidental side effects in the render phase.""
-  // <React.StrictMode>
   <Provider store={store}>
-    <App />
+    <Router>
+      <Routes>
+        {/* using the "/*" will allow for nested routes later on */}
+        <Route path="/*" element={<App />} />
+      </Routes>
+    </Router>
   </Provider>
-  // </React.StrictMode>
 );

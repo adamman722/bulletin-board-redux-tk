@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewPost } from "../../features/slices/post/postsSlice";
 import { selectAllUsers } from "../../features/slices/users/userSlice";
+import { useNavigate, useParams } from "react-router-dom";
 //nanoid helps us create a random id so we don't have to worry about creating one
 
 function AddPostForm() {
@@ -12,6 +13,7 @@ function AddPostForm() {
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const users = useSelector(selectAllUsers);
 
   const onTitleChange = (e) => setTitle(e.target.value);
@@ -31,6 +33,7 @@ function AddPostForm() {
         setTitle("");
         setContent("");
         setUserId("");
+        navigate("/");
       } catch (error) {
         console.log("Failed to save boiii", error);
       } finally {
