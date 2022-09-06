@@ -1,6 +1,10 @@
 body {
   height: 100vh;
   background-color: #fefae0;
+  overflow-y: scroll;
+}
+body::-webkit-scrollbar {
+  display: none;
 }
 main {
   color: #bc6c25;
@@ -26,6 +30,8 @@ nav > ul > li {
   font-size: 1.5rem;
   font-weight: bold;
   list-style: none;
+  margin-top: 3px;
+  padding: 5px;
   transition: 1s;
 }
 nav > ul > li:hover {
@@ -43,6 +49,18 @@ nav > ul > li:hover {
   justify-content: center;
   gap: 1.3rem;
 }
+.post-credit > a {
+  color: #bc6c25;
+  margin-right: 4px;
+  font-weight: 800;
+  transition: 1s;
+}
+/* .post-credit > a:hover {
+  color: #bc6c25;
+  margin-right: 4px;
+  font-weight: 800;
+} */
+
 article {
   margin-top: 1rem;
   display: flex;
@@ -53,7 +71,7 @@ article {
   padding: 1rem;
   border: 1px solid #dda15e;
   border-radius: 1rem;
-  cursor: pointer;
+  cursor: default;
   transition: 1s;
 }
 article:hover {
